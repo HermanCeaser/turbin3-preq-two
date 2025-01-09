@@ -1,8 +1,11 @@
 #[cfg(test)]
 mod tests {
     use bs58;
-    use solana_sdk::signature::{Keypair, Signer};
+    use solana_client::rpc_client::RpcClient;
+    use solana_sdk::signature::{read_keypair_file, Keypair, Signer};
     use std::io::{self, BufRead};
+
+    const RPC_URL: &str = "https://api.devnet.solana.com";
 
     #[test]
     fn keygen() {
@@ -11,6 +14,8 @@ mod tests {
             "You've generated a new Solana wallet: {}",
             kp.pubkey().to_string()
         );
+        // public Key: FkduzdmDwQY4NpT7UJud7Tn7jy5VmQ8XzWoXUEmTBZJE 
+
         println!("");
         println!("To save your wallet, copy and paste the following into a JSON file:");
 
@@ -49,8 +54,24 @@ mod tests {
     }
 
     #[test]
-    fn airdrop() {}
+    fn airdrop() {
+        let keypair = read_keypair_file("dev-wallet.json").expect("Couldn't find wallet file");
+        let client = RpcClient::new(RPC_URL);
+
+        match client.request_airdrop(&keypair.pubkey(), 2_000_000_000u64) {
+            Ok(s) => {
+                println!("Success! Check out your TX here:");
+                println!(
+                    "https://explorer.solana.com/tx/{}?cluster=devnet",
+                    s.to_string()
+                );
+            }
+            Err(e) => println!("Oops, something went wrong: {}", e.to_string()),
+        }
+    }
 
     #[test]
-    fn transfer_sol() {}
+    fn transfer_sol() {
+        
+    }
 }
