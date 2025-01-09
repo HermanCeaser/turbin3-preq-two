@@ -4,6 +4,7 @@ mod tests {
     use solana_client::rpc_client::RpcClient;
     use solana_program::{pubkey::Pubkey, system_instruction::transfer};
     use solana_sdk::{
+        message::Message,
         signature::{read_keypair_file, Keypair, Signer},
         transaction::Transaction,
     };
@@ -83,14 +84,31 @@ mod tests {
         let to_pubkey = Pubkey::from_str("4GoN8A8hxS4NyvdGMyU34URtmzBRiSft3GzzkERbAVLk").unwrap();
 
         let rpc_client = RpcClient::new(RPC_URL);
-        
+
+        // Get balance of dev wallet
+        let balance = rpc_client
+            .get_balance(&keypair.pubkey())
+            .expect("Failed to get balance!");
+
         // Create a connection
         let recent_blockhash = rpc_client
             .get_latest_blockhash()
             .expect("Failed to get recent blockhash");
 
+        // create a mock transaction to calculate fees
+        let message = Message::new_with_blockhash(
+            &[transfer(&keypair.pubkey(), &to_pubkey, balance)],
+            Some(&keypair.pubkey()),
+            &recent_blockhash,
+        );
+
+        // Calculate exact fee rate to transfer entire SOL amount out of account minus fees
+        let fee = rpc_client
+            .get_fee_for_message(&message)
+            .expect("Failed to get fee calculator");
+
         let transaction = Transaction::new_signed_with_payer(
-            &[transfer(&keypair.pubkey(), &to_pubkey, 100_000_000)],
+            &[transfer(&keypair.pubkey(), &to_pubkey, balance - fee)],
             Some(&keypair.pubkey()),
             &vec![&keypair],
             recent_blockhash,
@@ -101,6 +119,9 @@ mod tests {
             .send_and_confirm_transaction(&transaction)
             .expect("Failed to send transaction");
 
-        println!("Success! Check out your TX here: https://explorer.solana.com/tx/{}/?cluster=devnet", signature)
+        println!(
+            "Success! Check out your TX here: https://explorer.solana.com/tx/{}/?cluster=devnet",
+            signature
+        )
     }
 }
