@@ -16,7 +16,7 @@ mod tests {
         str::FromStr,
     };
 
-    use crate::programs::turbin3_prereq::{CompleteArgs, Turbin3PrereqProgram};
+    use crate::programs::turbin3_prereq::{CompleteArgs, TurbinePrereqProgram};
 
     const RPC_URL: &str = "https://api.devnet.solana.com";
 
@@ -135,7 +135,7 @@ mod tests {
         let rpc_client = RpcClient::new(RPC_URL);
         let signer = read_keypair_file("Turbin3-wallet.json").expect("Couldn't find wallet file!");
 
-        let prereq = Turbin3PrereqProgram::derive_program_address(&[
+        let prereq = TurbinePrereqProgram::derive_program_address(&[
             b"prereq",
             signer.pubkey().to_bytes().as_ref(),
         ]);
@@ -147,7 +147,7 @@ mod tests {
             .get_latest_blockhash()
             .expect("Failed to get recent blockhash");
 
-        let transaction = Turbin3PrereqProgram::complete(
+        let transaction = TurbinePrereqProgram::complete(
             &[&signer.pubkey(), &prereq, &system_program::id()],
             &args,
             Some(&signer.pubkey()),

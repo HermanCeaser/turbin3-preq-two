@@ -2,15 +2,25 @@ use solana_idlgen::idlgen;
 
 idlgen!({
     "version": "0.1.0",
-    "name": "Turbin3_prereq",
+    "name": "turbine_prereq",
     "metadata": {
-        "name": "Turbin3_prereq",
+        "name": "turbine_prereq",
         "version": "0.1.0",
-        "address": "HC2oqz2p6DEWfrahenqdq2moUcga9c9biqRBcdK3XKU1"
+        "address": "ADcaide4vBtKuyZQqdU689YqEGZMCmS4tL35bdTv9wJa"
     },
     "instructions": [
       {
         "name": "complete",
+        "discriminator": [
+          0,
+          77,
+          224,
+          147,
+          136,
+          25,
+          88,
+          76
+        ],
         "accounts": [
           {
             "name": "signer",
@@ -37,6 +47,16 @@ idlgen!({
       },
       {
         "name": "update",
+        "discriminator": [
+          219,
+          200,
+          88,
+          176,
+          158,
+          63,
+          253,
+          127
+        ],
         "accounts": [
           {
             "name": "signer",
@@ -64,7 +84,17 @@ idlgen!({
     ],
     "accounts": [
       {
-        "name": "PrereqAccount",
+        "name": "SolanaCohort5Account",
+        "discriminator": [
+          167,
+          81,
+          85,
+          136,
+          32,
+          169,
+          137,
+          77
+        ],
         "type": {
           "kind": "struct",
           "fields": [
@@ -85,6 +115,24 @@ idlgen!({
         "code": 6000,
         "name": "InvalidGithubAccount",
         "msg": "Invalid Github account"
+      }
+    ],
+    "types": [
+      {
+        "name": "SolanaCohort5Account",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "github",
+              "type": "bytes"
+            },
+            {
+              "name": "key",
+              "type": "pubkey"
+            }
+          ]
+        }
       }
     ]
   });
